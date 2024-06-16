@@ -1,20 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { ScenesComponent } from './scenes/scenes.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  imports: [ScenesComponent],
+  template: `<app-scenes /> `,
 })
-export class AppComponent implements OnInit {
-  title = 'proj1';
-  private aa = signal('a');
-  ngOnInit(): void {
-    this.aaa();
-  }
-  public aaa() {
-    console.log('🚀 ~ AppComponent ~ aa:', this.aa());
-  }
-}
+export class AppComponent {}
