@@ -5,6 +5,7 @@ import { ScenesComponent } from './scenes/scenes.component';
   selector: 'app-root',
   standalone: true,
   imports: [ScenesComponent],
+  styleUrl: './app.component.scss',
   template: `<app-scenes /> `,
 })
 export class AppComponent {}

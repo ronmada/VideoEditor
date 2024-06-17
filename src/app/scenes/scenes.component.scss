@@ -26,7 +26,7 @@
   display: none;
 }
 
-.button {
+.scene-button {
   border: 0;
   background: transparent;
   box-sizing: border-box;
@@ -50,8 +50,49 @@
 }
 
 .scene-track {
+  display: flex;
   width: 100%;
   max-width: 1000px;
   height: 100px;
-  background-color: red;
+  background-color: goldenrod;
+  & > span {
+    background-color: white;
+    margin: 1em 0.3em;
+    padding: 0.5em 0.25em;
+  }
+}
+.main-play-button {
+  margin-inline-start: auto;
+  margin-block: 2em;
+  display: flex;
+  gap: 1em;
+  padding: 1em;
+  border: 0;
+  align-items: center;
+  background-color: black;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  color: white;
+  cursor: pointer;
+  & > .button-symbol {
+    border: 0;
+    background: transparent;
+    box-sizing: border-box;
+    width: 0;
+    border-color: transparent transparent transparent white;
+    cursor: pointer;
+    border-style: solid;
+    border-width: 8px 0 8px 19px;
+  }
+  &:disabled {
+    // background-color: gray;
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+.track-ruler {
+  display: flex;
+  gap: 1em;
+  background-color: black;
+  color: white;
 }
