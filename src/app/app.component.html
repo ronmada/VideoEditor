@@ -1,0 +1,84 @@
+<div class="grid">
+  <div>
+    <div>all scenes</div>
+    @for (scene of scenes; track scene; let i = $index) {
+    <video
+      class="hide-video"
+      #sceneElem
+      [src]="scene"
+      (loadedmetadata)="onSceneLoadedmetadata()"
+    ></video>
+    <div
+      class="scene-bar"
+      draggable="true"
+      (dragstart)="onDragScene(sceneElem, i + 1)"
+    >
+      <div class="get-flex">
+        <span>Scene {{ i + 1 }}</span>
+        <span class="smlr-txt"
+          >duration: @if(sceneElem.duration){
+          {{ (sceneElem.duration | roundTwoDecimals) + "s" }}} @else{ loading
+          video metadata }
+        </span>
+      </div>
+      <button
+        type="button"
+        class="justify-end scene-button"
+        (click)="onSceneClick(sceneElem)"
+      ></button>
+    </div>
+    } @empty {
+    {{ "no scenes" }}
+    }
+  </div>
+  <div>
+    <div>Preview</div>
+    @if(selectedSceneSrc){
+    <video
+      #selectedScene
+      class="adjust-preview-dimen"
+      [src]="selectedSceneSrc"
+      (loadedmetadata)="onLoadedSelectedSceneVideo(selectedScene)"
+      (ended)="onVideoEnded()"
+    ></video>
+    }@else {
+    <div class="no-scene-selected-for-preview">Preview video here</div>
+    }
+  </div>
+</div>
+<button
+  type="button"
+  class="main-play-button"
+  [disabled]="!trackScenes.length"
+  (click)="onTrackPlayClick()"
+>
+  <span> @if(!isScenePreviewMode && isTrackPlaying) {Pause} @else {Play} </span>
+  <div
+    class="button-symbol"
+    [class.pause-button]="!isScenePreviewMode && isTrackPlaying"
+  ></div>
+</button>
+<div class="track-ruler">
+  @for(trackTime of trackTimes; track trackTime){
+  <span>{{ trackTime }}</span>
+  }
+</div>
+<div
+  id="scene-track"
+  class="scene-track"
+  (drop)="onDropSceneOnTrack($event)"
+  (dragover)="onDragOver($event)"
+>
+  @for (trackScene of trackScenes; track trackScene.id;let i = $index) {
+  <span
+    [id]="'scene-track-' + i"
+    [style.width.px]="trackScene.width"
+    draggable="true"
+    (dragover)="onDragOver($event)"
+    (drop)="onSwitchTracksPlacement($event)"
+    (dragend)="onDragEnd($event, i)"
+    (dragstart)="onDragSceneInTrack($event, trackScene, i)"
+    >{{ trackScene.sceneName }}</span
+  >
+  }
+</div>
