@@ -12,6 +12,7 @@
   background-color: lightgray;
   margin: 0.5em;
   padding: 0.5em 1em;
+  cursor: grab;
 }
 .justify-end {
   margin-inline-start: auto;
@@ -35,7 +36,7 @@
   transition: 100ms all ease;
   cursor: pointer;
   border-style: solid;
-  border-width: 15px 0 15px 30px;
+  border-width: 24px 0 24px 32px;
   &:hover {
     border-color: transparent transparent transparent #404040;
   }
@@ -55,35 +56,62 @@
   max-width: 1000px;
   height: 100px;
   background-color: goldenrod;
+  gap: 0.3em;
   & > span {
     background-color: white;
-    margin: 1em 0.3em;
+    border-radius: 8px;
+    margin-block: 1em;
     padding: 0.5em 0.25em;
+    cursor: grab;
+    &:first-child {
+      margin-inline-start: 1.3em;
+    }
+    &:last-child {
+      margin-inline-end: 1.3em;
+    }
   }
 }
 .main-play-button {
   margin-inline-start: auto;
   margin-block: 2em;
+  min-width: 10rem;
   display: flex;
   gap: 1em;
   padding: 1em;
   border: 0;
   align-items: center;
+  justify-content: center;
   background-color: black;
   border-radius: 10px;
   font-size: 1.1rem;
   color: white;
   cursor: pointer;
+
   & > .button-symbol {
     border: 0;
     background: transparent;
     box-sizing: border-box;
     width: 0;
+    height: 50px;
+
     border-color: transparent transparent transparent white;
+    transition: 100ms all ease;
     cursor: pointer;
+
+    // play state
     border-style: solid;
-    border-width: 8px 0 8px 19px;
+    border-width: 25px 0 25px 43px;
+
+    &.pause-button {
+      border-style: double;
+      border-width: 0px 0 0px 43px;
+    }
+
+    &:hover {
+      border-color: transparent transparent transparent #404040;
+    }
   }
+
   &:disabled {
     // background-color: gray;
     opacity: 0.3;

@@ -7,11 +7,13 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import { RoundTwoDecimalsPipe } from '../round-two-decimals.pipe';
 
 type TrackScene = {
   src: string;
   index: number;
   width: number;
+  id: number;
 };
 const SCENES = [
   'https://content.shuffll.com/files/background-music/1.mp4',
@@ -22,7 +24,7 @@ const SCENES = [
 @Component({
   selector: 'app-scenes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RoundTwoDecimalsPipe],
   styleUrl: './scenes.component.scss',
   template: `
     <div class="grid">
@@ -43,8 +45,10 @@ const SCENES = [
           <div class="get-flex">
             <span>Scene {{ i + 1 }}</span>
             <span class="smlr-txt"
-              >duration: {{ sceneElem.duration || 'loading times' }}s</span
-            >
+              >duration: @if(sceneElem.duration){
+              {{ (sceneElem.duration | roundTwoDecimals) + 's' }}} @else{
+              loading video metadata }
+            </span>
           </div>
           <button
             type="button"
@@ -77,21 +81,26 @@ const SCENES = [
       [disabled]="!trackScenes.length"
       (click)="onPlayClick()"
     >
-      <span>Play</span>
-      <div class="button-symbol"></div>
+      <span>
+        @if(!scenePreviewMode && isTrackPlaying) {Pause} @else {Play}
+      </span>
+      <div
+        class="button-symbol"
+        [class.pause-button]="!scenePreviewMode && isTrackPlaying"
+      ></div>
     </button>
     <div class="track-ruler">
-      @for(trackTime of trackTimes;track trackTime){
+      @for(trackTime of trackTimes; track trackTime){
       <span>{{ trackTime }}</span>
       }
     </div>
     <div
       id="scene-track"
       class="scene-track"
-      (drop)="onDropSceneOnTrack()"
+      (drop)="onDropSceneOnTrack($event)"
       (dragover)="onDragOver($event)"
     >
-      @for (trackScene of trackScenes; track trackScene) {
+      @for (trackScene of trackScenes; track trackScene.id) {
       <span
         [style.width.px]="trackScene.width"
         draggable="true"
@@ -117,6 +126,7 @@ export class ScenesComponent implements AfterViewInit {
   scenePreviewMode = true;
   videoPlayingIndex = 0;
   trackTimes: number[] = [];
+  isTrackPlaying = false;
   get scenes() {
     return SCENES;
   }
@@ -150,20 +160,25 @@ export class ScenesComponent implements AfterViewInit {
   }
 
   public onLoadedPreviewVideo(selectedScene: HTMLVideoElement) {
-    selectedScene.play();
+    selectedScene.play().then(() => {
+      this.isTrackPlaying = true;
+    });
   }
 
   public onDragScene(elem: HTMLVideoElement, index: number) {
+    console.log(this.trackScenes);
     this.draggedScene = {
       src: elem.src,
       index,
       width: Math.ceil(elem.duration * 20),
+      id: this.trackScenes.length,
     };
   }
 
-  public onDropSceneOnTrack() {
+  public onDropSceneOnTrack(_event: DragEvent) {
     // const a = this.trackTotalWidth / this.maxSceneWidth;
     this.trackScenes = [...this.trackScenes, this.draggedScene];
+    console.log(this.trackScenes);
   }
 
   public onDragOver(event: DragEvent) {
@@ -172,27 +187,44 @@ export class ScenesComponent implements AfterViewInit {
 
   public onPlayClick() {
     this.scenePreviewMode = false;
-    this.videoPlayingIndex = 0;
+    // this.videoPlayingIndex = 0;
     this.selectedSceneSrc = this.trackScenes[this.videoPlayingIndex].src;
-    this.selectedScene?.nativeElement.load();
-    this.videoPlayingIndex++;
+    if (this.selectedScene) {
+      if (this.selectedScene.nativeElement.paused) {
+        this.selectedScene.nativeElement.play();
+        this.isTrackPlaying = true;
+      } else {
+        this.selectedScene.nativeElement.pause();
+        this.isTrackPlaying = false;
+      }
+    }
+    // this.selectedScene?.nativeElement.load();
   }
 
   public onVideoEnded() {
+    this.videoPlayingIndex++;
     if (
       !this.scenePreviewMode &&
-      this.videoPlayingIndex !== this.trackScenes.length
+      this.videoPlayingIndex < this.trackScenes.length
     ) {
       this.selectedSceneSrc = this.trackScenes[this.videoPlayingIndex].src;
       this.selectedScene?.nativeElement.load();
-      this.videoPlayingIndex++;
+    } else {
+      this.videoPlayingIndex = 0;
+      this.isTrackPlaying = false;
+      // if you want to show default preview image on video end
+      // this.selectedSceneSrc = '';
     }
-    // if you want to show default preview image on video end
-    // else {
-    //   this.selectedSceneSrc = '';
-    // }
   }
 
-  public onSwitchTracksPlacement(trackScene: TrackScene) {}
-  public onDragSceneInTrack(trackScene: TrackScene) {}
+  public onSwitchTracksPlacement(trackScene: TrackScene) {
+    console.log('🚀 ~ ScenesComponent ~ trackScene:', trackScene);
+  }
+
+  public onDragSceneInTrack(trackScene: TrackScene) {
+    this.draggedScene = {
+      ...trackScene,
+      id: this.trackScenes.length,
+    };
+  }
 }
